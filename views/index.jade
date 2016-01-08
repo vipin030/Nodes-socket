@@ -1,0 +1,58 @@
+doctype html
+html. // THAT DOT
+    <body>
+        <script type="text/javascript" src="javascripts/jquery1.10.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript">
+        var SITE_URL="http://localhost:3000/";
+        var socketio = io.connect("127.0.0.1:3000");
+        function authenticate()
+        {
+            var user=$("#user").val();
+            var pass=$("#pass").val();
+            if(pass!="" && user!="")
+            {
+                $.ajax({
+                type:"POST",
+                url:"/login",
+                data:{user:user,pass:pass},
+                success:function(data)
+                {
+                    if(data.status)
+                    {
+                        window.localStorage.user=data.user;
+                        window.localStorage.uid=data.id;
+                        //socketio.emit("login",{"user":data.user,"uid":data.id});
+                        window.location=SITE_URL+"home";
+                    }
+                    else
+                        $("#message").html("Username or password is wrong");
+                }
+                });
+            }
+            else
+                $("#message").html("Username or passowrd cannot be empty");
+
+        }
+        </script>
+    	<style type="text/css">
+    	.loginform
+    	{
+    	width:300px;
+    	height:150px;
+    	margin-left:auto;
+    	margin-right:auto;
+    	margin-top:200px;
+    	border:1px solid #ccc;
+    	}
+    	</style>
+        <div class="loginform">
+        <form method="post" action="/login">
+        <table cellpadding=5 cellspacing=5><tr><td>Name</td><td><input type=text name="user" id="user"></td></tr>
+        <tr><td>Password</td><td><input type=password name="pass" id="pass"></td></tr>
+        <tr><td colspan=2 align="right"><input type=button name=submit value="login" onclick="authenticate()"></td></tr>
+        <tr><td colspan=2 id="message"></td></tr>
+        </table>
+        </form>
+        </div>
+    </body>

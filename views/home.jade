@@ -1,0 +1,67 @@
+doctype html
+html. // THAT DOT
+	<body>
+	<script type="text/javascript" src="javascripts/jquery1.10.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript">
+	var socketio = io.connect("127.0.0.1:3000");
+	var sel_user="";
+	socketio.on("message_to_client", function(data) { console.log("message from server");
+		var from=(data.from=="") ? "" : data.from+": ";
+		document.getElementById("chatlog").innerHTML = ("<hr/>" +from+data['message'] + document.getElementById("chatlog").innerHTML);
+	});
+
+	function sendMessage() {
+		var msg = document.getElementById("message_input").value;
+		//alert(msg);
+		socketio.emit("message_to_server", { message : msg,user:sel_user,from:window.localStorage.user});
+	}
+	
+	socketio.on("clist",function(data){
+	console.log(data);
+		document.getElementById("chatlist").innerHTML ="";
+		var clist="";
+		for(i in data)
+		{
+			clist+="<p id="+data[i].name+" class='chat'><img src='images/status.png' />&nbsp;"+data[i].name+"</p>";	
+		}
+		document.getElementById("chatlist").innerHTML=clist;
+		$(".chat").on("click",function(e){
+		sel_user=$(this).attr("id");
+		console.log("selected: "+sel_user);
+		});
+	});
+	socketio.on("authstatus",function(data){ console.log("authstatus");
+		if(data.status)
+			socketio.emit("chatlist",{});
+	});
+	function init()
+	{
+		socketio.emit("login",{"user":window.localStorage.user,"uid":window.localStorage.uid});
+		
+	}
+	
+	window.onload=init;
+	</script>
+	<style type="text/css">
+	.chatlist
+	{
+		width:200px;
+		height:500px;
+		float:left;
+		overflow:auto;
+		border:1px solid #ccc;
+	}
+	#chatlog{
+		width:500px;
+		height:500px;
+		overflow:auto;
+		float:left:
+	}
+	</style>
+	<h1>You are in home page</h1>
+	<input type="text" id="message_input"/>
+	<button onclick="sendMessage()">send</button>
+	<div class="chatlist" id="chatlist"></div>
+	<div id="chatlog"></div>
+	</body>
