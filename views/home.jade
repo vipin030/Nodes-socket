@@ -2,15 +2,17 @@ doctype html
 html. // THAT DOT
 	<body>
 	<script type="text/javascript" src="javascripts/jquery1.10.js"></script>
+	<script type="text/javascript" src="javascripts/chat.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript">
 	var socketio = io.connect("127.0.0.1:3000");
 	var sel_user="";
-	socketio.on("message_to_client", function(data) { console.log("message from server");
+	socketio.on("message_to_client", function(data) { console.log("message from server"+data.from);
 		var from=(data.from=="") ? "" : data.from+": ";
 		document.getElementById("chatlog").innerHTML = ("<hr/>" +from+data['message'] + document.getElementById("chatlog").innerHTML);
+		$("#chatbox_"+data.from+" .chatboxcontent").append('<div class="chatboxmessage"><span class="chatboxmessagefrom">'+data.from+':&nbsp;&nbsp;</span><span class="chatboxmessagecontent">'+data.message+'</span></div>');
+			//	$("#chatbox_"+chatboxtitle+" .chatboxcontent").scrollTop($("#chatbox_"+chatboxtitle+" .chatboxcontent")[0].scrollHeight);
 	});
-
 	function sendMessage() {
 		var msg = document.getElementById("message_input").value;
 		//alert(msg);
@@ -27,6 +29,7 @@ html. // THAT DOT
 		}
 		document.getElementById("chatlist").innerHTML=clist;
 		$(".chat").on("click",function(e){
+		chatWith($(this).attr("id"));
 		sel_user=$(this).attr("id");
 		console.log("selected: "+sel_user);
 		});
@@ -43,6 +46,7 @@ html. // THAT DOT
 	
 	window.onload=init;
 	</script>
+	<link rel="stylesheet" href="stylesheets/chat.css" />
 	<style type="text/css">
 	.chatlist
 	{

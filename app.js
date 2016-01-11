@@ -185,7 +185,7 @@ function getSession(socket) {
               console.log(socket.id);
               //io.sockets.connected[sid].emit('message_to_client',{"message":data.message});
               socket.emit("message_to_client",{"message":data.message,"from":''});
-              io.to(sid).emit("message_to_client",{"message":data.message,"from":data.from});
+              io.to(sid).emit("message_to_client",{"message":data.message,"from":data.from,"to":data.user});
               //io.sockets.emit("message_to_client",{"message":data.message});
           }
         }
